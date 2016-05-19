@@ -466,6 +466,25 @@ void hclose_abruptly(hFILE *fp)
 #include <fcntl.h>
 #include <unistd.h>
 
+#ifdef _WIN32
+// FIXME but not Cygwin probably
+#define WINDOWS_LEAN_AND_MEAN
+#define NOGDI
+#include <windows.h>
+#include <io.h>
+
+static int fsync(int fd)
+{
+    HANDLE fh = (HANDLE) _get_osfhandle(fd);
+    if (fh == INVALID_HANDLE_VALUE) { errno = EBADF; return -1; }
+    if (! FlushFileBuffers(fh)) {
+        errno = (GetLastError() == ERROR_INVALID_HANDLE)? EINVAL : EIO;
+        return -1;
+    }
+    return 0;
+}
+#endif
+
 /* For Unix, it doesn't matter whether a file descriptor is a socket.
    However Windows insists on send()/recv() and its own closesocket()
    being used when fd happens to be a socket.  */
