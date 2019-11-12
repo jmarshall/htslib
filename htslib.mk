@@ -145,29 +145,18 @@ HTSLIB_ALL = \
 	$(HTSDIR)/os/lzma_stub.h \
 	$(HTSDIR)/os/rand.c
 
-$(HTSDIR)/config.h:
-	+cd $(HTSDIR) && $(MAKE) config.h
+# Caller may override this to list only the subset they require.
+HTSLIB_PRODUCTS = lib-static lib-shared bgzip htsfile tabix htslib_static.mk htslib.pc.tmp
 
-$(HTSDIR)/libhts.a: $(HTSLIB_ALL)
-	+cd $(HTSDIR) && $(MAKE) lib-static
+$(HTSDIR)/libhts.a \
+$(HTSDIR)/libhts.so $(HTSDIR)/libhts.dylib $(HTSDIR)/libhts.dll.a $(HTSDIR)/hts.dll.a \
+$(HTSDIR)/bgzip $(HTSDIR)/htsfile $(HTSDIR)/tabix \
+$(HTSDIR)/htslib_static.mk $(HTSDIR)/htslib.pc.tmp: htslib-stamp.o
 
-$(HTSDIR)/libhts.so $(HTSDIR)/libhts.dylib $(HTSDIR)/libhts.dll.a $(HTSDIR)/hts.dll.a: $(HTSLIB_ALL)
-	+cd $(HTSDIR) && $(MAKE) lib-shared
-
-$(HTSDIR)/bgzip: $(HTSDIR)/bgzip.c $(HTSLIB_PUBLIC_HEADERS)
-	+cd $(HTSDIR) && $(MAKE) bgzip
-
-$(HTSDIR)/htsfile: $(HTSDIR)/htsfile.c $(HTSLIB_PUBLIC_HEADERS)
-	+cd $(HTSDIR) && $(MAKE) htsfile
-
-$(HTSDIR)/tabix: $(HTSDIR)/tabix.c $(HTSLIB_PUBLIC_HEADERS)
-	+cd $(HTSDIR) && $(MAKE) tabix
-
-$(HTSDIR)/htslib_static.mk: $(HTSDIR)/htslib.pc.tmp
-	+cd $(HTSDIR) && $(MAKE) htslib_static.mk
-
-$(HTSDIR)/htslib.pc.tmp:
-	+cd $(HTSDIR) && $(MAKE) htslib.pc.tmp
+# The stamp file needs to be in the caller project as different callers might want different products.
+htslib-stamp.o: $(HTSLIB_ALL) $(HTSDIR)/bgzip.c $(HTSDIR)/htsfile.c $(HTSDIR)/tabix.c
+	+cd $(HTSDIR) && $(MAKE) PRODUCTS='$(HTSLIB_PRODUCTS)' all-products
+	touch $@
 
 # Rules for phony targets.  You may wish to have your corresponding phony
 # targets invoke these in addition to their own recipes:

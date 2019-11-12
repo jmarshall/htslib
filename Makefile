@@ -97,6 +97,8 @@ BUILT_THRASH_PROGRAMS = \
 
 all: lib-static lib-shared $(BUILT_PROGRAMS) plugins $(BUILT_TEST_PROGRAMS)
 
+all-products: $(PRODUCTS)
+
 HTSPREFIX =
 include htslib_vars.mk
 
@@ -612,7 +614,7 @@ distdir:
 force:
 
 
-.PHONY: all check clean distclean distdir force
+.PHONY: all all-products check clean distclean distdir force
 .PHONY: install install-pkgconfig installdirs lib-shared lib-static
 .PHONY: maintainer-clean mostlyclean plugins print-config print-version
 .PHONY: show-version tags test testclean
