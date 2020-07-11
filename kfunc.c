@@ -99,7 +99,7 @@ double kf_erfc(double x)
 #define KF_TINY 1e-290
 
 // regularized lower incomplete gamma function, by series expansion
-static double _kf_gammap(double s, double z)
+static double gammap(double s, double z)
 {
 	double sum, x;
 	int k;
@@ -110,7 +110,7 @@ static double _kf_gammap(double s, double z)
 	return exp(s * log(z) - z - kf_lgamma(s + 1.) + log(sum));
 }
 // regularized upper incomplete gamma function, by continued fraction
-static double _kf_gammaq(double s, double z)
+static double gammaq(double s, double z)
 {
 	int j;
 	double C, D, f;
@@ -133,12 +133,12 @@ static double _kf_gammaq(double s, double z)
 
 double kf_gammap(double s, double z)
 {
-	return z <= 1. || z < s? _kf_gammap(s, z) : 1. - _kf_gammaq(s, z);
+	return z <= 1. || z < s? gammap(s, z) : 1. - gammaq(s, z);
 }
 
 double kf_gammaq(double s, double z)
 {
-	return z <= 1. || z < s? 1. - _kf_gammap(s, z) : _kf_gammaq(s, z);
+	return z <= 1. || z < s? 1. - gammap(s, z) : gammaq(s, z);
 }
 
 /* Regularized incomplete beta function. The method is taken from

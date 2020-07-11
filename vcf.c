@@ -1935,7 +1935,7 @@ int bcf_hdr_set(bcf_hdr_t *hdr, const char *fname)
     return 1;
 }
 
-static int _bcf_hrec_format(const bcf_hrec_t *hrec, int is_bcf, kstring_t *str)
+static int hrec_format(const bcf_hrec_t *hrec, int is_bcf, kstring_t *str)
 {
     uint32_t e = 0;
     if ( !hrec->value )
@@ -1960,14 +1960,14 @@ static int _bcf_hrec_format(const bcf_hrec_t *hrec, int is_bcf, kstring_t *str)
 
 int bcf_hrec_format(const bcf_hrec_t *hrec, kstring_t *str)
 {
-    return _bcf_hrec_format(hrec,0,str);
+    return hrec_format(hrec,0,str);
 }
 
 int bcf_hdr_format(const bcf_hdr_t *hdr, int is_bcf, kstring_t *str)
 {
     int i;
     for (i=0; i<hdr->nhrec; i++)
-        _bcf_hrec_format(hdr->hrec[i], is_bcf, str);
+        hrec_format(hdr->hrec[i], is_bcf, str);
 
     ksprintf(str, "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO");
     if ( bcf_hdr_nsamples(hdr) )
@@ -4338,7 +4338,7 @@ int bcf_has_filter(const bcf_hdr_t *hdr, bcf1_t *line, char *filter)
     return 0;
 }
 
-static inline int _bcf1_sync_alleles(const bcf_hdr_t *hdr, bcf1_t *line, int nals)
+static inline int bcf_sync_alleles(const bcf_hdr_t *hdr, bcf1_t *line, int nals)
 {
     line->d.shared_dirty |= BCF1_DIRTY_ALS;
 
@@ -4396,7 +4396,7 @@ int bcf_update_alleles(const bcf_hdr_t *hdr, bcf1_t *line, const char **alleles,
     }
     line->d.als = tmp.s; line->d.m_als = tmp.m;
     free(free_old);
-    return _bcf1_sync_alleles(hdr,line,nals);
+    return bcf_sync_alleles(hdr,line,nals);
 }
 
 int bcf_update_alleles_str(const bcf_hdr_t *hdr, bcf1_t *line, const char *alleles_string)
@@ -4414,7 +4414,7 @@ int bcf_update_alleles_str(const bcf_hdr_t *hdr, bcf1_t *line, const char *allel
         if ( *t==',' ) { *t = 0; nals++; }
         t++;
     }
-    return _bcf1_sync_alleles(hdr, line, nals);
+    return bcf_sync_alleles(hdr, line, nals);
 }
 
 int bcf_update_id(const bcf_hdr_t *hdr, bcf1_t *line, const char *id)
