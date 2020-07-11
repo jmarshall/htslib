@@ -381,9 +381,11 @@ tabix.o: tabix.c config.h $(htslib_tbx_h) $(htslib_sam_h) $(htslib_vcf_h) $(htsl
 
 # Maintainer source code checks
 # - copyright boilerplate presence
+# - C reserved identifier avoidance
 # - tab and trailing space detection
 maintainer-check:
 	test/maintainer/check_copyright.pl .
+	test/maintainer/check_identifiers.pl htslib/*.h *.[ch] cram/*.[ch]
 	test/maintainer/check_spaces.pl .
 
 # For tests that might use it, set $REF_PATH explicitly to use only reference

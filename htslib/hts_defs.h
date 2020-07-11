@@ -94,7 +94,7 @@ DEALINGS IN THE SOFTWARE.  */
 #ifdef __MINGW_PRINTF_FORMAT
 #define HTS_PRINTF_FMT __MINGW_PRINTF_FORMAT
 #else
-#define HTS_PRINTF_FMT printf
+#define HTS_PRINTF_FMT __printf__
 #endif
 
 #if HTS_COMPILER_HAS(__format__) || HTS_GCC_AT_LEAST(3,0)
