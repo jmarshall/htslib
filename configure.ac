@@ -64,6 +64,16 @@ EOF
 AC_PROG_CC
 AC_PROG_RANLIB
 
+# HTSlib uses X/Open-only facilities (M_SQRT2 etc, drand48() etc), and
+# various POSIX functions that are provided by various _POSIX_C_SOURCE values
+# or by _XOPEN_SOURCE >= 500. It also uses usleep(), which is removed when
+# _XOPEN_SOURCE >= 700. Hence we set it to 500 (but see also below).
+
+# Define _XOPEN_SOURCE unless the user has already done so via $CPPFLAGS etc.
+AC_CHECK_DECL([_XOPEN_SOURCE], [],
+  [AC_DEFINE([_XOPEN_SOURCE], [500], [Specify X/Open requirements])],
+  [])
+
 dnl Turn on compiler warnings, if possible
 HTS_PROG_CC_WARNINGS
 dnl Flags to treat warnings as errors.  These need to be applied to CFLAGS
@@ -578,6 +588,12 @@ dnl Only need to add to static_LIBS if not building as a plugin
   fi
 fi
 
+if test "$s3" = enabled ; then
+   AC_DEFINE([ENABLE_S3], 1, [Define if HTSlib should enable S3 support.])
+fi
+AC_SUBST([s3])
+AC_SUBST([CRYPTO_LIBS])
+
 dnl Look for regcomp in various libraries (needed on windows/mingw).
 AC_SEARCH_LIBS(regcomp, regex, [libregex=needed], [])
 
@@ -585,15 +601,8 @@ dnl Look for PTHREAD_MUTEX_RECURSIVE.
 dnl This is normally in pthread.h except on some broken glibc implementations.
 AC_CHECK_DECL(PTHREAD_MUTEX_RECURSIVE, [], [AC_DEFINE([_XOPEN_SOURCE],[600], [Needed for PTHREAD_MUTEX_RECURSIVE])], [[#include <pthread.h>]])
 
-if test "$s3" = enabled ; then
-   AC_DEFINE([ENABLE_S3], 1, [Define if HTSlib should enable S3 support.])
-fi
-
 dnl Apply value from HTS_PROG_CC_WERROR (if set)
 AS_IF([test "x$hts_late_cflags" != x],[CFLAGS="$CFLAGS $hts_late_cflags"])
-
-AC_SUBST([s3])
-AC_SUBST([CRYPTO_LIBS])
 
 AC_SUBST([pc_requires])
 AC_SUBST([private_LIBS])
