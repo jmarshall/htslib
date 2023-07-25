@@ -12,12 +12,18 @@ jobs:
           submodules: recursive
 
       - name: Build
+        continue-on-error: true
         run: |
           HOMEBREW_NO_AUTO_UPDATE=1 brew install autoconf automake libtool
           HOMEBREW_NO_AUTO_UPDATE=1 brew list
           autoreconf -i
-          ./configure CC=clang
+          ./configure CC=clang CFLAGS='-arch arm64 -arch x86_64 -O2 -g' LDFLAGS='-arch arm64 -arch x86_64 -g'
           make
+
+      - name: Show config.log
+        run: |
+          cat config.log
+          false
 
       - name: Run tests
         run: |
