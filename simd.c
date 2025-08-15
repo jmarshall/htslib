@@ -35,7 +35,9 @@ DEALINGS IN THE SOFTWARE.  */
 #include "sam_internal.h"
 
 #if defined __x86_64__
+#ifdef HAVE_IMMINTRIN_H
 #include <immintrin.h>
+#endif
 #elif defined __ARM_NEON
 #include <arm_neon.h>
 #endif

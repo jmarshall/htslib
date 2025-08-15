@@ -160,6 +160,9 @@ HTS_CHECK_COMPILE_FLAGS_NEEDED([avx512f], [-mavx512f -mpopcnt],
   AC_DEFINE([HAVE_AVX512],1,[Defined to 1 if rANS source using AVX512F can be compiled.])
 ])
 
+dnl Check for presence of the SIMD headers used
+AC_CHECK_HEADERS([immintrin.h])
+
 dnl Check for working __builtin_cpu_supports (ssse3 is broken on some clangs)
 AC_MSG_CHECKING([for working __builtin_cpu_supports("ssse3")])
 AC_LINK_IFELSE([AC_LANG_PROGRAM([],[
